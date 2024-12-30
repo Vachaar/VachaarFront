@@ -1,3 +1,5 @@
+"use client";
+
 import { Icon } from "@iconify/react";
 import { Image } from "@nextui-org/react";
 import { useRef, useState } from "react";
@@ -28,7 +30,7 @@ export const FileInput: React.FC<Props> = (props) => {
           accept="image/*"
           onChange={handleChange}
         />
-        <div
+        <button
           className="flex items-center justify-center w-20 h-20 rounded-lg border-2 border-default-400 cursor-pointer"
           onClick={() => inputRef.current?.click()}
         >
@@ -36,7 +38,7 @@ export const FileInput: React.FC<Props> = (props) => {
             className="pointer-events-none text-2xl text-default-400"
             icon="solar:add-circle-outline"
           />
-        </div>
+        </button>
         {files.map((file, index) => (
           <Image
             key={index}
