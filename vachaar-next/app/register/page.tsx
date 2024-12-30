@@ -5,24 +5,17 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
-  const router = useRouter();
-
+export default function RegisterPage() {
   const [isVisible, setIsVisible] = React.useState(false);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
-
-  const handleLogin = () => {
-    router.push("/");
-  };
 
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="flex w-full max-w-sm flex-col gap-4 rounded-large px-8 pb-10 pt-6">
         <p className="pb-4 text-3xl font-semibold">
-          ورود
+          ثبت نام
           <span aria-label="emoji" className="ml-2" role="img">
             👋
           </span>
@@ -31,6 +24,15 @@ export default function LoginPage() {
           className="flex flex-col gap-4"
           onSubmit={(e) => e.preventDefault()}
         >
+          <Input
+            isRequired
+            label="نام کاربری"
+            labelPlacement="outside"
+            name="username"
+            placeholder="نام کاربری را وارد کنید"
+            type="text"
+            variant="bordered"
+          />
           <Input
             isRequired
             label="ایمیل"
@@ -64,13 +66,13 @@ export default function LoginPage() {
             type={isVisible ? "text" : "password"}
             variant="bordered"
           />
-          <Button color="primary" type="submit" onClick={handleLogin}>
-            ورود
+          <Button color="primary" type="submit">
+            ثبت نام
           </Button>
         </form>
         <p className="text-center text-small">
-          <Link href="/register" size="sm">
-            حساب کاربری ندارید؟ ثبت نام کنید
+          <Link href="/login" size="sm">
+            حساب کاربری دارید؟ وارد شوید
           </Link>
         </p>
       </div>
