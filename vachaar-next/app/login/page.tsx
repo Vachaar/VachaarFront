@@ -36,9 +36,6 @@ export default function LoginPage() {
         onError: () => {
           toast.error("ایمیل یا رمز عبور اشتباه است.");
         },
-        catch: () => {
-          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
-        },
         finally: () => {
           setIsLoading(false);
         },
