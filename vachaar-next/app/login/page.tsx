@@ -1,21 +1,49 @@
 "use client";
 
 import { Input } from "@nextui-org/input";
-import React from "react";
+import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { makeRequest } from "@/utils/request";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const [isVisible, setIsVisible] = React.useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const togglePasswordVisibility = () =>
+    setIsPasswordVisible(!isPasswordVisible);
 
   const handleLogin = () => {
-    router.push("/");
+    setIsLoading(true);
+    makeRequest(
+      "usr/login/",
+      {
+        method: "POST",
+        body: { email, password },
+      },
+      {
+        onSuccess: () => {
+          toast.success("با موفقیت وارد شدید.");
+          router.push("/");
+        },
+        onError: () => {
+          toast.error("ایمیل یا رمز عبور اشتباه است.");
+        },
+        catch: () => {
+          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
+        },
+        finally: () => {
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   return (
@@ -39,12 +67,14 @@ export default function LoginPage() {
             placeholder="ایمیل را وارد کنید"
             type="email"
             variant="bordered"
+            value={email}
+            onValueChange={setEmail}
           />
           <Input
             isRequired
             endContent={
-              <button type="button" onClick={toggleVisibility}>
-                {isVisible ? (
+              <button type="button" onClick={togglePasswordVisibility}>
+                {isPasswordVisible ? (
                   <Icon
                     className="pointer-events-none text-2xl text-default-400"
                     icon="solar:eye-closed-linear"
@@ -61,10 +91,17 @@ export default function LoginPage() {
             labelPlacement="outside"
             name="password"
             placeholder="رمز عبور را وارد کنید"
-            type={isVisible ? "text" : "password"}
+            type={isPasswordVisible ? "text" : "password"}
             variant="bordered"
+            value={password}
+            onValueChange={setPassword}
           />
-          <Button color="primary" type="submit" onClick={handleLogin}>
+          <Button
+            color="primary"
+            type="submit"
+            onClick={handleLogin}
+            isLoading={isLoading}
+          >
             ورود
           </Button>
         </form>
