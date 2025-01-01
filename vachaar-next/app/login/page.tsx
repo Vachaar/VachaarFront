@@ -7,6 +7,7 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { makeRequest } from "@/utils/request";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,35 +15,35 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const togglePasswordVisibility = () =>
     setIsPasswordVisible(!isPasswordVisible);
 
   const handleLogin = () => {
-    fetch("http://localhost/usr/login/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    setIsLoading(true);
+    makeRequest(
+      "usr/login/",
+      {
+        method: "POST",
+        body: { email, password },
       },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => {
-        if (res.ok) {
+      {
+        onSuccess: () => {
           toast.success("با موفقیت وارد شدید.");
           router.push("/");
-        } else {
-          if (res.status === 429) {
-            toast.error(
-              "تعداد درخواست‌ها بیش از حد مجاز است. لطفاً بعداً تلاش کنید."
-            );
-            return;
-          }
+        },
+        onError: () => {
           toast.error("ایمیل یا رمز عبور اشتباه است.");
-        }
-      })
-      .catch(() => {
-        toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
-      });
+        },
+        catch: () => {
+          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
+        },
+        finally: () => {
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   return (
@@ -95,7 +96,12 @@ export default function LoginPage() {
             value={password}
             onValueChange={setPassword}
           />
-          <Button color="primary" type="submit" onClick={handleLogin}>
+          <Button
+            color="primary"
+            type="submit"
+            onClick={handleLogin}
+            isLoading={isLoading}
+          >
             ورود
           </Button>
         </form>

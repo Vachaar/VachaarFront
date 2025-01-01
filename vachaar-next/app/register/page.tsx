@@ -8,6 +8,7 @@ import { Link } from "@nextui-org/link";
 import toast from "react-hot-toast";
 import { InputOtp } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { makeRequest } from "@/utils/request";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -29,62 +30,54 @@ export default function RegisterPage() {
 
   const handleRegister = () => {
     setIsLoading(true);
-    fetch("http://localhost/usr/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    makeRequest(
+      "usr/register/",
+      {
+        method: "POST",
+        body: { email, phone, password },
       },
-      body: JSON.stringify({ email, phone, password }),
-    })
-      .then((res) => {
-        if (res.ok) {
+      {
+        onSuccess: (res) => {
           setIsCodeSent(true);
           toast("لطفا کد ارسال شده به ایمیل را وارد کنید.");
-        } else {
-          if (res.status === 429) {
-            toast.error(
-              "تعداد درخواست‌ها بیش از حد مجاز است. لطفاً بعداً تلاش کنید."
-            );
-            return;
-          }
+          return res;
+        },
+        onError: (res) => {
           res.json().then((data) => {
             setEmailError(data?.email?.[0]);
             setPhoneError(data?.phone?.[0]);
             setPasswordError(data?.password?.[0]);
           });
-        }
-      })
-      .catch(() => {
-        toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
-      })
-      .finally(() => setIsLoading(false));
+        },
+        catch: () => {
+          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
+        },
+        finally: () => setIsLoading(false),
+      }
+    );
   };
 
   const handleVerifyEmail = () => {
-    fetch("http://localhost/usr/verify-email/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    makeRequest(
+      "usr/verify-email/",
+      {
+        method: "POST",
+        body: { email, code },
       },
-      body: JSON.stringify({ email, code }),
-    })
-      .then((res) => {
-        if (res.ok) {
+      {
+        onSuccess: () => {
           toast.success("ثبت نام شما با موفقیت انجام شد. لطفا وارد شوید.");
           router.push("/login");
-        } else {
-          if (res.status === 429) {
-            toast.error(
-              "تعداد درخواست‌ها بیش از حد مجاز است. لطفاً بعداً تلاش کنید."
-            );
-            return;
-          }
-          setCodeError("کد وارد شده صحیح نیست");
-        }
-      })
-      .catch(() => {
-        toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
-      });
+        },
+        onError: (res) => {
+          res.json().then((data) => setCodeError(data?.code?.[0]));
+        },
+        catch: () => {
+          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
+        },
+        finally: () => setIsLoading(false),
+      }
+    );
   };
 
   return (
