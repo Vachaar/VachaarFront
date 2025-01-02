@@ -9,7 +9,6 @@ export const makeRequest = (
   next: {
     onSuccess: (value: Response) => void;
     onError: (value: Response) => void;
-    catch: (value: Response) => void;
     finally?: () => void;
   }
 ) => {
@@ -33,6 +32,8 @@ export const makeRequest = (
         next.onError(res);
       }
     })
-    .catch(next.catch)
+    .catch(() =>
+      toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.")
+    )
     .finally(next.finally);
 };

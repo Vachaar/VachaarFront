@@ -49,9 +49,6 @@ export default function RegisterPage() {
             setPasswordError(data?.password?.[0]);
           });
         },
-        catch: () => {
-          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
-        },
         finally: () => setIsLoading(false),
       }
     );
@@ -70,10 +67,27 @@ export default function RegisterPage() {
           router.push("/login");
         },
         onError: (res) => {
-          res.json().then((data) => setCodeError(data?.code?.[0]));
+          res.json().then((data) => setCodeError(data?.message));
         },
-        catch: () => {
-          toast.error("خطا در ارتباط با سرور. لطفا اینترنت خود را بررسی کنید.");
+        finally: () => setIsLoading(false),
+      }
+    );
+  };
+
+  const handleResendVerificationEmail = () => {
+    setIsLoading(true);
+    makeRequest(
+      "usr/resend-verification-email/",
+      {
+        method: "POST",
+        body: { email },
+      },
+      {
+        onSuccess: () => {
+          toast.success("کد تایید بازارسال شد.");
+        },
+        onError: () => {
+          toast.error("خطایی رخ داده است.");
         },
         finally: () => setIsLoading(false),
       }
@@ -84,25 +98,43 @@ export default function RegisterPage() {
     <div className="flex h-full w-full items-center justify-center">
       <div className="flex w-full max-w-sm flex-col gap-4 rounded-large px-8 pb-10 pt-6">
         {isCodeSent ? (
-          <div className="flex flex-col items-center gap-2" dir={"ltr"}>
+          <>
+            <div className="flex flex-col items-center gap-2" dir={"ltr"}>
+              <label
+                htmlFor="file-input"
+                className="block text-sm text-foreground"
+              >
+                کد ارسال شده به ایمیل را وارد کنید
+              </label>
+              <InputOtp
+                length={6}
+                value={code}
+                onValueChange={setCode}
+                onChange={() => setCodeError(undefined)}
+                variant="bordered"
+                onComplete={handleVerifyEmail}
+                errorMessage={codeError}
+                isInvalid={codeError ? true : undefined}
+                className={"text-center"}
+              />
+            </div>
             <label
               htmlFor="file-input"
               className="block text-sm text-foreground"
-            >
-              کد ارسال شده به ایمیل را وارد کنید
-            </label>
-            <InputOtp
-              length={6}
-              value={code}
-              onValueChange={setCode}
-              onChange={() => setCodeError(undefined)}
-              variant="bordered"
-              onComplete={handleVerifyEmail}
-              errorMessage={codeError}
-              isInvalid={codeError ? true : undefined}
-              className={"text-center"}
-            />
-          </div>
+            ></label>
+            <div className="flex justify-center">
+              <Button
+                color="primary"
+                type="submit"
+                onClick={handleResendVerificationEmail}
+                isLoading={isLoading}
+                variant="bordered"
+                size="sm"
+              >
+                بازارسال کد تایید
+              </Button>
+            </div>
+          </>
         ) : (
           <>
             <p className="pb-4 text-3xl font-semibold">
