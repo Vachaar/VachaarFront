@@ -100,13 +100,11 @@ export default function RegisterPage() {
         {isCodeSent ? (
           <>
             <div className="flex flex-col items-center gap-2" dir={"ltr"}>
-              <label
-                htmlFor="file-input"
-                className="block text-sm text-foreground"
-              >
+              <label htmlFor="code" className="block text-sm text-foreground">
                 کد ارسال شده به ایمیل را وارد کنید
               </label>
               <InputOtp
+                id="code"
                 length={6}
                 value={code}
                 onValueChange={setCode}
@@ -118,10 +116,6 @@ export default function RegisterPage() {
                 className={"text-center"}
               />
             </div>
-            <label
-              htmlFor="file-input"
-              className="block text-sm text-foreground"
-            ></label>
             <div className="flex justify-center">
               <Button
                 color="primary"
