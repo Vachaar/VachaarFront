@@ -2,7 +2,11 @@ import toast from "react-hot-toast";
 
 export const makeRequest = (
   endpoint: string,
-  options: { method: string; body?: Object; formData?: FormData },
+  options: {
+    method: string;
+    body?: { [key: string]: unknown };
+    formData?: FormData;
+  },
   next: {
     onSuccess: (value: Response) => void;
     onError: (value: Response) => void;
