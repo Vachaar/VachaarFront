@@ -4,9 +4,11 @@ export const makeRequest = (
   endpoint: string,
   options: {
     method: string;
-    body?: { [key: string]: unknown };
-    formData?: FormData;
-  },
+  } & (
+    | { body: { [key: string]: unknown }; formData?: never }
+    | { body?: never; formData: FormData }
+    | { body?: never; formData?: never }
+  ),
   next: {
     onSuccess: (value: Response) => void;
     onError: (value: Response) => void;
@@ -18,9 +20,7 @@ export const makeRequest = (
     headers: {
       ...(options.body ? { "Content-Type": "application/json" } : {}),
     },
-    body: options.body
-      ? JSON.stringify(options.body)
-      : (options.formData ?? undefined),
+    body: options.body ? JSON.stringify(options.body) : options.formData,
     credentials: "include",
   })
     .then((res) => {
