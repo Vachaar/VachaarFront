@@ -6,7 +6,7 @@ const nextConfig = {
       //for handling cors
       {
         source: "/vachaar-api/:path*",
-        destination: `${process.env.NODE_ENV === "development" ? "http://localhost" : process.env.NEXT_PUBLIC_BASE_URL}/:path*/`,
+        destination: `${process.env.NODE_ENV === "development" ? "http://localhost" : process.env.NEXT_PUBLIC_BASE_URL}/:path*`,
       },
     ];
   },

@@ -26,7 +26,9 @@ export default function AddItemPage() {
           description,
           price,
           category_id: categoryId,
-          banners: files.map((file) => file.id),
+          banners: files.map((file, index) => {
+            return { image_id: file.id, order: index + 1 };
+          }),
         },
       },
       {
