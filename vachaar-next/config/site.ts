@@ -8,5 +8,13 @@ export const siteConfig = {
       label: "ورود",
       href: "/login",
     },
+    {
+      label: "ثبت‌نام",
+      href: "/register",
+    },
+    {
+      label: "افزودن آگهی",
+      href: "/new",
+    },
   ],
 };

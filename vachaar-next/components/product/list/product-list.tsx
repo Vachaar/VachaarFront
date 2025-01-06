@@ -1,25 +1,91 @@
 "use client";
 
-import { ScrollShadow } from "@nextui-org/react";
-import products from "@/data/products";
-import ProductListItem from "./product-list-item";
+import { makeRequest } from "@/utils/request";
+import { digitsToPersian } from "@/utils/string";
+import { Card, CardBody, CardFooter, Image, Spinner } from "@nextui-org/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+type Item = {
+  id: number;
+  title: string;
+  description: string;
+  category_id: number;
+  image_ids: number[];
+  price: string;
+};
 
 export const ProductList = () => {
+  const [list, setList] = useState<Item[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const getItems = (page: number) => {
+    makeRequest(
+      `product/items?page=${page}`,
+      {
+        method: "GET",
+      },
+      {
+        onSuccess: (res) => {
+          res.json().then((data) => {
+            setList((prevList) => [...prevList, ...data.results]);
+            if (!data.next) setLoading(false);
+          });
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    getItems(page);
+  }, [page]);
+
+  const lastItemRef = useCallback((node: HTMLDivElement | null) => {
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, []);
+
   return (
-    <div className="my-auto flex w-full max-w-7xl flex-col items-start gap-2">
-      <ScrollShadow
-        className="-mx-6 -my-5 flex w-full max-w-full snap-x justify-start gap-6 px-6 py-5"
-        orientation="horizontal"
-        size={20}
-      >
-        {products.map((product) => (
-          <ProductListItem
-            key={product.id}
-            {...product}
-            className="snap-start"
-          />
-        ))}
-      </ScrollShadow>
+    <div className="gap-8 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6">
+      {list?.map((item, index) => (
+        <Card
+          key={index}
+          isPressable
+          shadow="sm"
+          onPress={() => console.log("item pressed")}
+        >
+          <CardBody className="overflow-visible p-0">
+            <Image
+              alt={item.title}
+              className="w-full object-cover h-[140px]"
+              radius="lg"
+              shadow="sm"
+              src={
+                item.image_ids[0]
+                  ? `vachaar-api/product/images/${item.image_ids[0]}`
+                  : "/images/no-image.jpg"
+              }
+              width="100%"
+            />
+          </CardBody>
+          <CardFooter className="text-small justify-between flex-col gap-2">
+            <b className="line-clamp-2">{item.title}</b>
+            <p className="text-default-500">
+              {digitsToPersian(item.price)} تومان
+            </p>
+          </CardFooter>
+        </Card>
+      ))}
+      {loading && <Spinner ref={lastItemRef} />}
     </div>
   );
 };
