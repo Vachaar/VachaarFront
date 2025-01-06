@@ -17,6 +17,7 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useDebounce } from "use-debounce";
 
 type Item = {
@@ -67,8 +68,8 @@ export const ProductList = () => {
               if (!data.next) setHasMore(false);
             });
           },
-          onError: (error) => {
-            console.log(error);
+          onError: () => {
+            toast.error("خطایی در دریافت آگهی ها رخ داده است.");
           },
           finally: () => {
             setLoading(false);
@@ -76,7 +77,7 @@ export const ProductList = () => {
         }
       );
     },
-    [debouncedQuery, order, categoryID, loading]
+    [debouncedQuery, order, categoryID]
   );
 
   useEffect(() => {
@@ -90,7 +91,7 @@ export const ProductList = () => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          if (!loading) {
+          if (!loading && hasMore) {
             getItems(pageRef.current);
             pageRef.current += 1;
           }
@@ -98,8 +99,14 @@ export const ProductList = () => {
       });
       if (node) observer.current.observe(node);
     },
-    [getItems, loading]
+    [getItems, loading, hasMore]
   );
+
+  useEffect(() => {
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
 
   return (
     <>
@@ -173,6 +180,7 @@ export const ProductList = () => {
             isPressable
             shadow="sm"
             onPress={() => console.log("item pressed")}
+            aria-label="items list"
           >
             <CardBody className="overflow-visible p-0">
               <Image
