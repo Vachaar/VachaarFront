@@ -1,7 +1,7 @@
 "use client";
 
 import { SearchIcon } from "@/components/icons";
-import { categories } from "@/data/mock-data";
+import { categories } from "@/data/config";
 import { makeRequest } from "@/utils/request";
 import { digitsToMoney, digitsToPersian } from "@/utils/string";
 import { Icon } from "@iconify/react";
@@ -34,7 +34,7 @@ type Item = {
   description: string;
   category_id: number;
   image_ids: number[];
-  price: string;
+  price: number;
 };
 
 enum Order {
@@ -59,8 +59,8 @@ export const ProductList = () => {
   const [categoryID, setCategoryID] = useState<number>();
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 500);
-  //todo get highest price from api
-  const defaultPriceRange = [0, 1000000];
+  const [maxPrice, setMaxPrice] = useState<number>(0);
+  const defaultPriceRange = [0, maxPrice];
   const [tempPriceRange, setTempPriceRange] = useState(defaultPriceRange);
   const [priceRange, setPriceRange] = useState(defaultPriceRange);
   const observer = useRef<IntersectionObserver | null>(null);
@@ -71,16 +71,17 @@ export const ProductList = () => {
     (page: number) => {
       setLoading(true);
       makeRequest(
-        `product/items?page=${page}&search=${debouncedQuery}&ordering=${order}&category=${categoryID ?? ""}&price__gte=${priceRange[0]}&price__lte=${priceRange[1]}`,
+        `product/items?page=${page}&search=${debouncedQuery}&ordering=${order}&category=${categoryID ?? ""}&price__gte=${!maxPrice ? "" : priceRange[0]}&price__lte=${!maxPrice ? "" : priceRange[1]}`,
         {
           method: "GET",
         },
         {
           onSuccess: (res) => {
             res.json().then((data) => {
+              if (data.results.max_price) setMaxPrice(data.results.max_price);
               setList((prevList) => {
-                if (page == 1) return data.results;
-                return [...prevList, ...data.results];
+                if (page == 1) return data.results.items;
+                return [...prevList, ...data.results.items];
               });
               if (!data.next) setHasMore(false);
             });
@@ -174,9 +175,22 @@ export const ProductList = () => {
           value={query}
           onValueChange={setQuery}
         />
-
-        <Button onPress={onOpen} className="flex-shrink-0">
-          محدودۀ قیمت
+        <Button
+          onPress={() => {
+            if (priceRange[1] >= maxPrice || !priceRange[1]) {
+              setPriceRange([priceRange[0], maxPrice]);
+              setTempPriceRange([priceRange[0], maxPrice]);
+            } else {
+              setTempPriceRange(priceRange);
+            }
+            onOpen();
+          }}
+          className="flex-shrink-0"
+        >
+          {priceRange.toString() === defaultPriceRange.toString() ||
+          !priceRange[1]
+            ? "محدودۀ قیمت"
+            : `از ${digitsToPersian(digitsToMoney(`${priceRange[0]} تومان`))} تا ${digitsToPersian(digitsToMoney(`${priceRange[1]} تومان`))}`}
         </Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
@@ -202,8 +216,8 @@ export const ProductList = () => {
                     className="max-w-md"
                     defaultValue={defaultPriceRange}
                     aria-label="Price Range"
-                    maxValue={defaultPriceRange[1]}
-                    minValue={defaultPriceRange[0]}
+                    maxValue={maxPrice}
+                    minValue={0}
                     step={1000}
                     value={tempPriceRange}
                     onChange={(value) =>
@@ -274,7 +288,7 @@ export const ProductList = () => {
             <CardFooter className="text-small justify-between flex-col gap-2">
               <b className="line-clamp-2">{item.title}</b>
               <p className="text-default-500">
-                {digitsToPersian(item.price)} تومان
+                {digitsToPersian(item.price.toString())} تومان
               </p>
             </CardFooter>
           </Card>

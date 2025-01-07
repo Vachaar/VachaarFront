@@ -5,7 +5,7 @@ import React, { useCallback, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { Select, SelectItem } from "@nextui-org/react";
 import { FileInput } from "@/components/ui/file-input";
-import { categories } from "@/data/mock-data";
+import { categories } from "@/data/config";
 import { makeRequest } from "@/utils/request";
 import toast from "react-hot-toast";
 
