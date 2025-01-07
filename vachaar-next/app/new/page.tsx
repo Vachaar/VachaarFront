@@ -87,8 +87,8 @@ export default function AddItemPage() {
             onChange={(e) => setCategoryId(Number(e.target.value))}
             value={categoryId}
           >
-            {categories.map((category, index) => (
-              <SelectItem key={index} value={category.id}>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
                 {category.title}
               </SelectItem>
             ))}
