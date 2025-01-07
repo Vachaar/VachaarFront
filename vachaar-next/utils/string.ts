@@ -5,3 +5,10 @@ export const digitsToPersian = (number: string) => {
     return persianNumbers[+w];
   });
 };
+
+export function digitsToMoney(value: string): string {
+  const v = value.replace(/,/g, "");
+  if (!v) return "";
+  if (v.length < 3) return v;
+  return v.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+}

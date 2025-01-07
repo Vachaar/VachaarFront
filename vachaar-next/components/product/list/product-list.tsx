@@ -3,18 +3,26 @@
 import { SearchIcon } from "@/components/icons";
 import { categories } from "@/data/mock-data";
 import { makeRequest } from "@/utils/request";
-import { digitsToPersian } from "@/utils/string";
+import { digitsToMoney, digitsToPersian } from "@/utils/string";
 import { Icon } from "@iconify/react";
 import {
+  Button,
   Card,
   CardBody,
   CardFooter,
   Chip,
   Image,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Select,
   SelectItem,
+  Slider,
   Spinner,
+  useDisclosure,
 } from "@nextui-org/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -30,31 +38,40 @@ type Item = {
 };
 
 enum Order {
-  PRICE = "price",
-  DATE = "date",
+  CHEAPEST = "price",
+  NEWEST = "-created_at",
+  MOST_EXPENSIVE = "-price",
+  OLDEST = "created_at",
 }
 
 const orders = [
-  { label: "جدید ترین", value: Order.DATE },
-  { label: "ارزان ترین", value: Order.PRICE },
+  { label: "جدید ترین", value: Order.NEWEST },
+  { label: "ارزان ترین", value: Order.CHEAPEST },
+  { label: "گران ترین", value: Order.MOST_EXPENSIVE },
+  { label: "قدیمی ترین", value: Order.OLDEST },
 ];
 
 export const ProductList = () => {
   const [list, setList] = useState<Item[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [order, setOrder] = useState<Order>(Order.DATE);
+  const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState<Order>(Order.NEWEST);
   const [categoryID, setCategoryID] = useState<number>();
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 500);
+  //todo get highest price from api
+  const defaultPriceRange = [0, 1000000];
+  const [tempPriceRange, setTempPriceRange] = useState(defaultPriceRange);
+  const [priceRange, setPriceRange] = useState(defaultPriceRange);
   const observer = useRef<IntersectionObserver | null>(null);
   const pageRef = useRef(1);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const getItems = useCallback(
     (page: number) => {
       setLoading(true);
       makeRequest(
-        `product/items?page=${page}&search=${debouncedQuery}&ordering=${order}&category_id=${categoryID}`,
+        `product/items?page=${page}&search=${debouncedQuery}&ordering=${order}&category=${categoryID ?? ""}&price__gte=${priceRange[0]}&price__lte=${priceRange[1]}`,
         {
           method: "GET",
         },
@@ -69,7 +86,10 @@ export const ProductList = () => {
             });
           },
           onError: () => {
-            toast.error("خطایی در دریافت آگهی ها رخ داده است.");
+            toast.error(
+              "خطایی در دریافت آگهی ها رخ داده است. لطفا صفحه را مجددا بارگذاری کنید."
+            );
+            setHasMore(false);
           },
           finally: () => {
             setLoading(false);
@@ -77,14 +97,14 @@ export const ProductList = () => {
         }
       );
     },
-    [debouncedQuery, order, categoryID]
+    [debouncedQuery, order, categoryID, priceRange]
   );
 
   useEffect(() => {
     setHasMore(true);
     pageRef.current = 1;
     getItems(1);
-  }, [debouncedQuery, order, categoryID]);
+  }, [debouncedQuery, order, categoryID, priceRange]);
 
   const lastItemRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -154,6 +174,61 @@ export const ProductList = () => {
           value={query}
           onValueChange={setQuery}
         />
+
+        <Button onPress={onOpen} className="flex-shrink-0">
+          محدودۀ قیمت
+        </Button>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  تعیین محدودۀ قیمت
+                </ModalHeader>
+                <ModalBody>
+                  <div className="flex justify-between">
+                    <p>
+                      {digitsToPersian(
+                        digitsToMoney(`${tempPriceRange[1]} تومان`)
+                      )}
+                    </p>
+                    <p>
+                      {digitsToPersian(
+                        digitsToMoney(`${tempPriceRange[0]} تومان`)
+                      )}
+                    </p>
+                  </div>
+                  <Slider
+                    className="max-w-md"
+                    defaultValue={defaultPriceRange}
+                    aria-label="Price Range"
+                    maxValue={defaultPriceRange[1]}
+                    minValue={defaultPriceRange[0]}
+                    step={1000}
+                    value={tempPriceRange}
+                    onChange={(value) =>
+                      setTempPriceRange(value as [number, number])
+                    }
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    بستن
+                  </Button>
+                  <Button
+                    color="primary"
+                    onPress={() => {
+                      setPriceRange(tempPriceRange);
+                      onClose();
+                    }}
+                  >
+                    اعمال
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
         <Select
           isRequired
           variant="bordered"
@@ -204,8 +279,8 @@ export const ProductList = () => {
             </CardFooter>
           </Card>
         ))}
-        {hasMore && <Spinner ref={lastItemRef} />}
       </div>
+      {hasMore && <Spinner ref={lastItemRef} />}
     </>
   );
 };
