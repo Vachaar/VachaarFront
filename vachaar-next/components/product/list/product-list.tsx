@@ -214,7 +214,7 @@ export const ProductList = () => {
                   </div>
                   <Slider
                     className="max-w-md"
-                    defaultValue={[0, maxPrice]}
+                    defaultValue={defaultPriceRange}
                     aria-label="Price Range"
                     maxValue={maxPrice}
                     minValue={0}
