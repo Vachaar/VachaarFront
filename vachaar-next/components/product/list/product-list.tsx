@@ -174,9 +174,10 @@ export const ProductList = () => {
           value={query}
           onValueChange={setQuery}
         />
-
         <Button onPress={onOpen} className="flex-shrink-0">
-          محدودۀ قیمت
+          {priceRange.toString() === defaultPriceRange.toString()
+            ? "محدودۀ قیمت"
+            : `از ${digitsToPersian(digitsToMoney(`${priceRange[0]} تومان`))} تا ${digitsToPersian(digitsToMoney(`${priceRange[1]} تومان`))}`}
         </Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
