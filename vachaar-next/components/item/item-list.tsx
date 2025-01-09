@@ -90,9 +90,9 @@ export default function ItemList(props: Props) {
         <p className="text-center text-default-500">موردی یافت نشد</p>
       )}
       <div className="gap-8 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6">
-        {items?.map((item, index) => (
+        {items?.map((item) => (
           <Card
-            key={index}
+            key={item.id}
             isPressable
             shadow="sm"
             onPress={() => console.log("item pressed")}

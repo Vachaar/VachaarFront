@@ -29,7 +29,7 @@ export const getItems = async (
     params.set("price__lte", price__lte.toString());
   }
   try {
-    const url = `http://localhost/product/items?${params.toString()}`;
+    const url = `${process.env.NODE_ENV === "development" ? "http://localhost" : process.env.NEXT_PUBLIC_BASE_URL}/product/items?${params.toString()}`;
     const response = await fetch(url);
     const data = (await response.json()) as GetItemsResponse;
     return data;
