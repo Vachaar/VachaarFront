@@ -2,7 +2,7 @@ export type Item = {
   id: number;
   title: string;
   description: string;
-  category_id: number;
+  category: number;
   image_ids: number[];
   price: number;
 };
