@@ -42,7 +42,7 @@ export const getItems = async (
   }
 };
 
-export const getItem = async (id: number) => {
+export const getItem = async (id: string) => {
   const response = await fetch(`${baseURL}/product/items/${id}`);
   const data = await response.json();
   return data as Item;
