@@ -1,6 +1,11 @@
 "use server";
 
-import { GetItemsResponse, Ordering } from "@/types/item";
+import { GetItemsResponse, Item, Ordering } from "@/types/item";
+
+const baseURL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost"
+    : process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getItems = async (
   page: number,
@@ -10,7 +15,6 @@ export const getItems = async (
   price__lte?: number,
   ordering?: Ordering
 ) => {
-  console.log(price__gte);
   const params = new URLSearchParams();
   params.set("page", page.toString());
   if (search) {
@@ -29,11 +33,17 @@ export const getItems = async (
     params.set("price__lte", price__lte.toString());
   }
   try {
-    const url = `${process.env.NODE_ENV === "development" ? "http://localhost" : process.env.NEXT_PUBLIC_BASE_URL}/product/items?${params.toString()}`;
+    const url = `${baseURL}/product/items?${params.toString()}`;
     const response = await fetch(url);
     const data = (await response.json()) as GetItemsResponse;
     return data;
   } catch (error: unknown) {
     throw new Error(error as string);
   }
+};
+
+export const getItem = async (id: string) => {
+  const response = await fetch(`${baseURL}/product/items/${id}`);
+  const data = await response.json();
+  return data as Item;
 };
