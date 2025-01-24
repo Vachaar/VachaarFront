@@ -14,7 +14,7 @@ const ItemImages: React.FC<Props> = (props) => {
   );
   return (
     <div>
-      <div className="h-[366px] w-full relative">
+      <div className="h-[280px] w-full md:h-[366px] relative">
         <Image
           alt={props.item.title}
           fill
