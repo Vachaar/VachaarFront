@@ -9,9 +9,14 @@ import toast from "react-hot-toast";
 import { InputOtp } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { makeRequest } from "@/utils/request";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function RegisterPage() {
   const router = useRouter();
+
+  const [loggedIn, setLoggedIn] = useLocalStorage("logged_in", "true", {
+    initializeWithValue: false,
+  });
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -38,6 +43,7 @@ export default function RegisterPage() {
       },
       {
         onSuccess: (res) => {
+          setLoggedIn("true");
           setIsCodeSent(true);
           toast("لطفا کد ارسال شده به ایمیل را وارد کنید.");
           return res;

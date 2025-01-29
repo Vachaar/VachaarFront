@@ -8,9 +8,13 @@ import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { makeRequest } from "@/utils/request";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [loggedIn, setLoggedIn] = useLocalStorage("logged_in", "true", {
+    initializeWithValue: false,
+  });
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +36,7 @@ export default function LoginPage() {
         onSuccess: () => {
           toast.success("با موفقیت وارد شدید.");
           router.push("/");
+          setLoggedIn("true");
         },
         onError: () => {
           toast.error("ایمیل یا رمز عبور اشتباه است.");

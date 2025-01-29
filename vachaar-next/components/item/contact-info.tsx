@@ -15,12 +15,16 @@ import { makeRequest } from "@/utils/request";
 import { digitsToPersian } from "@/utils/string";
 import toast from "react-hot-toast";
 import { Icon } from "@iconify/react";
+import { useLocalStorage } from "usehooks-ts";
 
 interface Props {
   id: string;
 }
 
 const ContactInfo: React.FC<Props> = (props) => {
+  const [loggedIn, setLoggedIn] = useLocalStorage("logged_in", "false", {
+    initializeWithValue: false,
+  });
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [phone, setPhone] = useState<number>();
   const handleGetContactInfo = () => {
@@ -29,8 +33,10 @@ const ContactInfo: React.FC<Props> = (props) => {
       `product/items/contact-info/${props.id}`,
       { method: "GET" },
       {
-        onError: () => {
-          toast.error("خطایی در دریافت اطلاعات تماس رخ داده است.");
+        onError: (res) => {
+          if (res.status !== 401) {
+            toast.error("خطایی در دریافت اطلاعات تماس رخ داده است.");
+          }
           onClose();
         },
         onSuccess: (res) => {
@@ -38,7 +44,8 @@ const ContactInfo: React.FC<Props> = (props) => {
             setPhone(data.phone);
           });
         },
-      }
+      },
+      setLoggedIn
     );
   };
   return (
