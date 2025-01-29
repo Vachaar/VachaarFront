@@ -5,6 +5,7 @@ export type Item = {
   category: number;
   image_ids: number[];
   price: number;
+  is_owner: boolean;
 };
 
 export type GetItemsResponse = {

@@ -3,6 +3,10 @@ const nextConfig = {
   output: "standalone",
   async rewrites() {
     return [
+      {
+        source: "/edit/:id",
+        destination: "/new",
+      },
       //for handling cors
       {
         source: "/vachaar-api/:path*",

@@ -1,5 +1,6 @@
 import { getItem } from "@/actions/item";
 import ContactInfo from "@/components/item/contact-info";
+import EditItem from "@/components/item/edit-item";
 import ItemImages from "@/components/item/item-images";
 import PurchaseRequest from "@/components/item/purchase-request";
 import Report from "@/components/report/report";
@@ -27,11 +28,17 @@ export default async function ItemPage({
               {digitsToPersian(digitsToMoney(item.price.toString()))} تومان
             </p>
             <div className="flex gap-4">
-              <ContactInfo id={id} />
-              <PurchaseRequest id={id} />
+              {item.is_owner ? (
+                <EditItem id={id} />
+              ) : (
+                <>
+                  <ContactInfo id={id} />
+                  <PurchaseRequest id={id} />
+                </>
+              )}
             </div>
             <p className="text-medium text-default-500">{item.description}</p>
-            <Report id={id} />
+            {!item.is_owner && <Report id={id} />}
           </div>
         </div>
       </div>

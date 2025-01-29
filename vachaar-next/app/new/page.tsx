@@ -1,26 +1,58 @@
 "use client";
 
 import { Input, Textarea } from "@nextui-org/input";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { Select, SelectItem } from "@nextui-org/react";
 import { FileInput } from "@/components/ui/file-input";
 import { categories } from "@/data/config";
 import { makeRequest } from "@/utils/request";
 import toast from "react-hot-toast";
+import { usePathname, useRouter } from "next/navigation";
+import { Item } from "@/types/item";
 
-export default function AddItemPage() {
+export default function AddOrEditItemPage() {
   const [categoryId, setCategoryId] = useState<number>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const id = pathname.split("/")?.[2];
+
+  useEffect(() => {
+    if (id) {
+      makeRequest(
+        `/product/items/${id}`,
+        { method: "GET" },
+        {
+          onError: () =>
+            toast.error("خطایی در دریافت اطلاعات آگهی رخ داده است"),
+          onSuccess: (res) => {
+            res.json().then((data) => {
+              const item = data as Item;
+              if (!item.is_owner) {
+                toast.error("دسترسی غیرمجاز");
+                router.replace(`/item/${id}`);
+              }
+              setCategoryId(item.category);
+              setDescription(item.description);
+              setPrice(item.price.toString());
+              setTitle(item.title);
+            });
+          },
+        }
+      );
+    }
+  }, [id]);
+
   const handleCreateItem: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     makeRequest(
-      "product/items/create",
+      id ? `product/items/edit/${id}` : "product/items/create",
       {
-        method: "POST",
+        method: id ? "PUT" : "POST",
         body: {
           title,
           description,
@@ -33,10 +65,11 @@ export default function AddItemPage() {
       },
       {
         onSuccess: () => {
-          toast.success("آگهی با موفقیت ساخته شد.");
+          toast.success(`آگهی با موفقیت ${id ? "ویرایش" : "ساخته"} شد.`);
+          router.push(`/item/${id}`);
         },
         onError: () => {
-          toast.error("خطا در ساخت آگهی");
+          toast.error(`خطا در ${id ? "ویرایش" : "ساخت"} آگهی`);
         },
       }
     );
@@ -131,7 +164,7 @@ export default function AddItemPage() {
             label="افزودن تصویر"
           />
           <Button color="primary" type="submit">
-            ثبت آگهی
+            {id ? "ویرایش آگهی" : "ثبت آگهی"}
           </Button>
         </form>
       </div>
