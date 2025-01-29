@@ -66,7 +66,11 @@ export default function AddOrEditItemPage() {
       {
         onSuccess: () => {
           toast.success(`آگهی با موفقیت ${id ? "ویرایش" : "ساخته"} شد.`);
-          router.push(`/item/${id}`);
+          if (id) {
+            router.push(`/item/${id}`);
+          } else {
+            router.push(`/`);
+          }
         },
         onError: () => {
           toast.error(`خطا در ${id ? "ویرایش" : "ساخت"} آگهی`);

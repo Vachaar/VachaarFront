@@ -1,7 +1,7 @@
 "use client";
 
 import { Item } from "@/types/item";
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 import { useState } from "react";
 
 interface Props {
@@ -14,33 +14,25 @@ const ItemImages: React.FC<Props> = (props) => {
   );
   return (
     <div>
-      <div className="h-[280px] w-full md:h-[366px] relative">
-        <Image
-          alt={props.item.title}
-          fill
-          className="object-cover rounded"
-          src={
-            selectedImage
-              ? `/vachaar-api/product/images/${selectedImage}`
-              : "/images/no-image.jpg"
-          }
-        />
-      </div>
+      <Image
+        alt={props.item.title}
+        className="object-cover rounded h-[280px] w-full md:h-[366px]"
+        src={
+          selectedImage
+            ? `/vachaar-api/product/images/${selectedImage}`
+            : "/images/no-image.jpg"
+        }
+      />
       <div className="mt-4 flex gap-4 overflow-x-auto">
-        {props.item.image_ids.map((image_id, index) => (
-          <div
-            key={index}
-            className="h-24 w-24 flex-shrink-0 relative cursor-pointer"
+        {props.item.image_ids.map((image_id) => (
+          <Image
+            key={image_id}
+            alt={props.item.title}
+            className="object-cover rounded h-24 w-24 flex-shrink-0 relative cursor-pointer"
+            src={`/vachaar-api/product/images/${image_id}`}
             onClick={() => setSelectedImage(image_id)}
             role="button"
-          >
-            <Image
-              alt={props.item.title}
-              fill
-              className="object-cover rounded"
-              src={`/vachaar-api/product/images/${image_id}`}
-            />
-          </div>
+          />
         ))}
       </div>
     </div>
