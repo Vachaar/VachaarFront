@@ -5,7 +5,7 @@ export default async function ProfileItemPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ sold: string }>;
+  searchParams: Promise<{ sold?: string }>;
 }) {
   const id = (await params).id;
   const sold = (await searchParams).sold;

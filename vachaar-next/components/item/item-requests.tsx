@@ -200,7 +200,17 @@ export default function ItemRequests(props: Props) {
                   }
                   return (
                     <TableCell>
-                      <Chip color={state.color as any}>{state.label}</Chip>
+                      <Chip
+                        color={
+                          state.color as
+                            | "success"
+                            | "primary"
+                            | "secondary"
+                            | "warning"
+                        }
+                      >
+                        {state.label}
+                      </Chip>
                     </TableCell>
                   );
                 }

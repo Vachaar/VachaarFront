@@ -23,7 +23,7 @@ export const Navbar = () => {
   const loggedIn = useReadLocalStorage("logged_in");
   const [items, setItems] = useState(siteConfig.navItems.authenticated);
   useEffect(() => {
-    if (loggedIn == "true") {
+    if (loggedIn === "true") {
       setItems(siteConfig.navItems.authenticated);
     } else {
       setItems(siteConfig.navItems.unauthenticated);

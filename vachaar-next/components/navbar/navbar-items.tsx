@@ -2,17 +2,18 @@
 
 import { siteConfig } from "@/config/site";
 import { NavbarItem, NavbarMenuItem } from "@nextui-org/react";
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { link as linkStyles } from "@nextui-org/theme";
+import { useReadLocalStorage } from "usehooks-ts";
 
 interface Props {
   isMobile?: boolean;
 }
 
 const NavbarItems: React.FC<Props> = (props) => {
-  const isLoggedIn = localStorage.getItem("logged_in");
+  const isLoggedIn = useReadLocalStorage("logged_in");
   const items = isLoggedIn
     ? siteConfig.navItems.authenticated
     : siteConfig.navItems.unauthenticated;
@@ -21,17 +22,7 @@ const NavbarItems: React.FC<Props> = (props) => {
       <div className="mx-4 mt-2 flex flex-col gap-2">
         {items.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              color={
-                index === 2
-                  ? "primary"
-                  : index === items.length - 1
-                    ? "danger"
-                    : "foreground"
-              }
-              href="#"
-              size="lg"
-            >
+            <Link color={"foreground"} href={item.href} size="lg">
               {item.label}
             </Link>
           </NavbarMenuItem>

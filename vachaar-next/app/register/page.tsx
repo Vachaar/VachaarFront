@@ -43,7 +43,6 @@ export default function RegisterPage() {
       },
       {
         onSuccess: (res) => {
-          setLoggedIn("true");
           setIsCodeSent(true);
           toast("لطفا کد ارسال شده به ایمیل را وارد کنید.");
           return res;
@@ -69,6 +68,7 @@ export default function RegisterPage() {
       },
       {
         onSuccess: () => {
+          setLoggedIn("true");
           toast.success("ثبت نام شما با موفقیت انجام شد. لطفا وارد شوید.");
           router.push("/login");
         },
