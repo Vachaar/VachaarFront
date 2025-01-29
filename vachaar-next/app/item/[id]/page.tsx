@@ -1,7 +1,8 @@
 import { getItem } from "@/actions/item";
 import ContactInfo from "@/components/item/contact-info";
 import ItemImages from "@/components/item/item-images";
-import ReportItem from "@/components/item/report-item";
+import PurchaseRequest from "@/components/item/purchase-request";
+import Report from "@/components/report/report";
 import { digitsToMoney, digitsToPersian } from "@/utils/string";
 export default async function ItemPage({
   params,
@@ -11,7 +12,7 @@ export default async function ItemPage({
   const id = (await params).id;
   const item = await getItem(id);
   return (
-    <div className="flex items-center h-screen justify-center p-4">
+    <div className="flex justify-center p-4">
       <div className="max-w-8xl h-full w-full px-2 lg:px-24">
         <div
           dir="ltr"
@@ -25,9 +26,12 @@ export default async function ItemPage({
             <p className="text-xl font-medium tracking-tight">
               {digitsToPersian(digitsToMoney(item.price.toString()))} تومان
             </p>
-            <ContactInfo id={id} />
+            <div className="flex gap-4">
+              <ContactInfo id={id} />
+              <PurchaseRequest id={id} />
+            </div>
             <p className="text-medium text-default-500">{item.description}</p>
-            <ReportItem id={id} />
+            <Report id={id} />
           </div>
         </div>
       </div>

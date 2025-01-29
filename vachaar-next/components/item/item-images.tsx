@@ -32,6 +32,7 @@ const ItemImages: React.FC<Props> = (props) => {
             key={index}
             className="h-24 w-24 flex-shrink-0 relative cursor-pointer"
             onClick={() => setSelectedImage(image_id)}
+            role="button"
           >
             <Image
               alt={props.item.title}

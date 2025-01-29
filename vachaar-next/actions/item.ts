@@ -1,6 +1,7 @@
 "use server";
 
-import { GetItemsResponse, Item, Ordering } from "@/types/item";
+import { GetItemsResponse, Item, ItemRequest, Ordering } from "@/types/item";
+import { cookies } from "next/headers";
 
 const baseURL =
   process.env.NODE_ENV === "development"
@@ -42,8 +43,36 @@ export const getItems = async (
   }
 };
 
+export const getProfileItems = async (filterGroup: string) => {
+  try {
+    const url = `${baseURL}/product/items/profile/${filterGroup}`;
+    const response = await fetch(url, {
+      headers: { Cookie: (await cookies()).toString() },
+    });
+    const data = (await response.json()) as Item[];
+    return data;
+  } catch (error: unknown) {
+    throw new Error(error as string);
+  }
+};
+
 export const getItem = async (id: string) => {
   const response = await fetch(`${baseURL}/product/items/${id}`);
   const data = await response.json();
   return data as Item;
+};
+
+export const getItemRequests = async (id: string) => {
+  try {
+    const response = await fetch(
+      `${baseURL}/product/purchase-requests/item/${id}`,
+      {
+        headers: { Cookie: (await cookies()).toString() },
+      }
+    );
+    const data = await response?.json();
+    return data as ItemRequest[];
+  } catch (error: unknown) {
+    throw new Error(error as string);
+  }
 };
