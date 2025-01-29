@@ -1,5 +1,6 @@
 import { getItem } from "@/actions/item";
 import ContactInfo from "@/components/item/contact-info";
+import DeleteItem from "@/components/item/delete-item";
 import EditItem from "@/components/item/edit-item";
 import ItemImages from "@/components/item/item-images";
 import PurchaseRequest from "@/components/item/purchase-request";
@@ -29,7 +30,10 @@ export default async function ItemPage({
             </p>
             <div className="flex gap-4">
               {item.is_owner ? (
-                <EditItem id={id} />
+                <>
+                  <EditItem id={id} />
+                  <DeleteItem id={id} />
+                </>
               ) : (
                 <>
                   <ContactInfo id={id} />
