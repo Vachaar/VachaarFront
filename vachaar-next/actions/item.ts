@@ -57,7 +57,9 @@ export const getProfileItems = async (filterGroup: string) => {
 };
 
 export const getItem = async (id: string) => {
-  const response = await fetch(`${baseURL}/product/items/${id}`);
+  const response = await fetch(`${baseURL}/product/items/${id}`, {
+    headers: { Cookie: (await cookies()).toString() },
+  });
   const data = await response.json();
   return data as Item;
 };
