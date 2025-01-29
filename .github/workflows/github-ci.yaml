@@ -28,7 +28,9 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
 
       - name: Install dependencies
+        run: cd vachaar-next
         run: pnpm install
 
       - name: Build project
+        run: cd vachaar-next
         run: pnpm run build
