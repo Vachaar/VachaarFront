@@ -2,12 +2,11 @@
 
 import { getItems } from "@/actions/item";
 import { Item, Ordering } from "@/types/item";
-import { digitsToPersian } from "@/utils/string";
-import { Card, CardBody, CardFooter, Image, Spinner } from "@nextui-org/react";
-import Link from "next/link";
+import { Spinner } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useInView } from "react-intersection-observer";
+import ItemCard from "./item-card";
 
 type Props = {
   initialItems: Item[];
@@ -91,38 +90,7 @@ export default function ItemList(props: Props) {
         <p className="text-center text-default-500">موردی یافت نشد</p>
       )}
       <div className="gap-8 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6">
-        {items?.map((item) => (
-          <Link key={item.id} href={`/item/${item.id}`} className="flex">
-            <Card
-              isPressable
-              shadow="sm"
-              aria-label="items list"
-              className="flex-grow"
-            >
-              <CardBody className="overflow-visible p-0">
-                <Image
-                  alt={item.title}
-                  className="w-full object-cover h-[140px]"
-                  radius="lg"
-                  shadow="sm"
-                  src={
-                    item.image_ids[0]
-                      ? `vachaar-api/product/images/${item.image_ids[0]}`
-                      : "/images/no-image.jpg"
-                  }
-                  width="100%"
-                  height="auto"
-                />
-              </CardBody>
-              <CardFooter className="text-small justify-between flex-col gap-2">
-                <b className="line-clamp-2">{item.title}</b>
-                <p className="text-default-500">
-                  {digitsToPersian(item.price.toString())} تومان
-                </p>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+        {items?.map((item) => <ItemCard key={item.id} item={item} />)}
       </div>
       {hasMore && <Spinner ref={ref} />}
     </>

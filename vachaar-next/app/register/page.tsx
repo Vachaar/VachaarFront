@@ -9,9 +9,14 @@ import toast from "react-hot-toast";
 import { InputOtp } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { makeRequest } from "@/utils/request";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function RegisterPage() {
   const router = useRouter();
+
+  const [loggedIn, setLoggedIn] = useLocalStorage("logged_in", "true", {
+    initializeWithValue: false,
+  });
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -63,6 +68,7 @@ export default function RegisterPage() {
       },
       {
         onSuccess: () => {
+          setLoggedIn("true");
           toast.success("ثبت نام شما با موفقیت انجام شد. لطفا وارد شوید.");
           router.push("/login");
         },

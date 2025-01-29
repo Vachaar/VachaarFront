@@ -13,7 +13,8 @@ export const makeRequest = (
     onSuccess: (value: Response) => void;
     onError: (value: Response) => void;
     finally?: () => void;
-  }
+  },
+  setLoggedIn?: React.Dispatch<React.SetStateAction<string>>
 ) => {
   return fetch(`/vachaar-api/${endpoint}`, {
     method: options.method,
@@ -32,6 +33,10 @@ export const makeRequest = (
             "تعداد درخواست‌ها بیش از حد مجاز است. لطفاً بعداً تلاش کنید."
           );
           return;
+        }
+        if (res.status === 401) {
+          toast.error("ابتدا وارد حساب کاربری خود شوید.");
+          setLoggedIn?.("false");
         }
         next.onError(res);
       }

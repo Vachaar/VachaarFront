@@ -14,7 +14,7 @@ const ItemImages: React.FC<Props> = (props) => {
   );
   return (
     <div>
-      <div className="h-[366px] w-full relative">
+      <div className="h-[280px] w-full md:h-[366px] relative">
         <Image
           alt={props.item.title}
           fill
@@ -32,6 +32,7 @@ const ItemImages: React.FC<Props> = (props) => {
             key={index}
             className="h-24 w-24 flex-shrink-0 relative cursor-pointer"
             onClick={() => setSelectedImage(image_id)}
+            role="button"
           >
             <Image
               alt={props.item.title}

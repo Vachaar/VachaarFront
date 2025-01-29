@@ -83,7 +83,11 @@ export const Filter = (props: Props) => {
 
   const createCategoryURL = (categoryID: number) => {
     const params = new URLSearchParams(searchParams);
-    params.set("category", categoryID.toString());
+    if (params.get("category") === categoryID.toString()) {
+      params.delete("category");
+    } else {
+      params.set("category", categoryID.toString());
+    }
     return `${pathname}?${params.toString()}`;
   };
 
