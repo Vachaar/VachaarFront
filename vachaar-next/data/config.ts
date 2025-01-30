@@ -24,6 +24,7 @@ export const ReportReasons = [
   {
     title: "قیمت نادرست",
     id: 4,
+    isItemSpecific: true,
   },
   {
     title: "اطلاعات تماس نادرست",
@@ -32,10 +33,12 @@ export const ReportReasons = [
   {
     title: "دسته‌بندی نادرست",
     id: 6,
+    isItemSpecific: true,
   },
   {
     title: "ناموجودی یا پاسخگو نبودن",
     id: 7,
+    isItemSpecific: true,
   },
   {
     title: "تکراری یا اسپم",

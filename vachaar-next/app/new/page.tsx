@@ -17,6 +17,8 @@ export default function AddOrEditItemPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
   const pathname = usePathname();
   const id = pathname.split("/")?.[2];
@@ -49,6 +51,7 @@ export default function AddOrEditItemPage() {
 
   const handleCreateItem: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+    setLoading(true);
     makeRequest(
       id ? `product/items/edit/${id}` : "product/items/create",
       {
@@ -74,6 +77,9 @@ export default function AddOrEditItemPage() {
         },
         onError: () => {
           toast.error(`خطا در ${id ? "ویرایش" : "ساخت"} آگهی`);
+        },
+        finally: () => {
+          setLoading(false);
         },
       }
     );
@@ -167,7 +173,7 @@ export default function AddOrEditItemPage() {
             files={files}
             label="افزودن تصویر"
           />
-          <Button color="primary" type="submit">
+          <Button color="primary" type="submit" isLoading={loading}>
             {id ? "ویرایش آگهی" : "ثبت آگهی"}
           </Button>
         </form>

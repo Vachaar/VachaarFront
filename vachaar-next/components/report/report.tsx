@@ -60,7 +60,9 @@ const Report: React.FC<Props> = (props) => {
                   label="دلیل گزارش را انتخاب کنید."
                   onChange={(e) => setReasonID(Number(e.target.value))}
                 >
-                  {ReportReasons.map((reason) => (
+                  {ReportReasons.filter(
+                    (reason) => !props.isUser || reason.isItemSpecific
+                  ).map((reason) => (
                     <Radio value={reason.id.toString()} key={reason.id}>
                       {reason.title}
                     </Radio>
